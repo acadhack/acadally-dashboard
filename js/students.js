@@ -159,23 +159,44 @@
         ${page.map((s, i) => {
             const idx = start + i + 1;
             const score = s._score != null ? s._score : activityScore(s);
-            const phone = s.phone_number
-            ? `<span class="mono">${esc(s.phone_number)}</span>`
-            : '<span class="detail-tag no-data">—</span>';
-            const email = s.email
-            ? `<span class="mono" style="font-size:0.6875rem">${esc(s.email)}</span>`
-            : '<span class="detail-tag no-data">—</span>';
             const section = (s.section_name || '').replace('Class ', '');
+            
+            // Special Censoring logic
+            const isProtected = isProtectedUser(s);
+            const revealed = isAuthed();
+            
+            let phoneHtml, emailHtml;
+            const phoneVal = s.phone_number;
+            const emailVal = s.email;
+
+            if (isProtected && !revealed) {
+                // Censored state for Anirudh
+                const triggerClass = 'reveal-trigger-cell';
+                phoneHtml = phoneVal 
+                    ? `<span class="mono censored-val ${triggerClass}" style="cursor:pointer;" title="Click to reveal">${censorPhone(phoneVal)}</span>`
+                    : '<span class="detail-tag no-data">—</span>';
+                emailHtml = emailVal
+                    ? `<span class="mono censored-val ${triggerClass}" style="font-size:0.6875rem;cursor:pointer;" title="Click to reveal">${censorEmail(emailVal)}</span>`
+                    : '<span class="detail-tag no-data">—</span>';
+            } else {
+                // Normal or Revealed state
+                phoneHtml = phoneVal
+                    ? `<span class="mono" style="cursor:pointer;" data-copy="${esc(phoneVal)}" title="Click to copy">${esc(phoneVal)}</span>`
+                    : '<span class="detail-tag no-data">—</span>';
+                emailHtml = emailVal
+                    ? `<span class="mono" style="font-size:0.6875rem;cursor:pointer;" data-copy="${esc(emailVal)}" title="Click to copy">${esc(emailVal)}</span>`
+                    : '<span class="detail-tag no-data">—</span>';
+            }
 
             return `
             <tr class="fade-enter" style="animation-delay:${Math.min(i, 15) * 20}ms">
             <td><span class="mono" style="color:var(--text-4)">${idx}</span></td>
-            <td><span class="name-primary">${displayName(s)}</span></td>
-            <td><span class="student-username">${esc(s.username)}</span></td>
+            <td><span class="name-primary" style="cursor:pointer;" data-copy="${esc(displayName(s))}" title="Click to copy">${displayName(s)}</span></td>
+            <td><span class="student-username" style="cursor:pointer;" data-copy="${esc(s.username)}" title="Click to copy">${esc(s.username)}</span></td>
             <td><span class="student-section">${esc(section)}</span></td>
             <td>${renderGenderCell(s.gender)}</td>
-            <td>${phone}</td>
-            <td>${email}</td>
+            <td>${phoneHtml}</td>
+            <td>${emailHtml}</td>
             <td class="text-r"><span class="score-val">${score.toLocaleString()}</span></td>
             <td class="text-r"><span class="coins-val">${(s.coins || 0).toLocaleString()}</span></td>
             <td class="text-r"><span class="gems-val">${(s.gems || 0).toLocaleString()}</span></td>
@@ -194,6 +215,13 @@
                     state.sortDesc = ['gems', 'coins', '_score'].includes(key);
                 }
                 applyAndRender();
+            });
+        });
+
+        // Attach reveal modal to censored cells
+        el.querySelectorAll('.reveal-trigger-cell').forEach(cell => {
+            cell.addEventListener('click', () => {
+                showPinModal(() => applyAndRender());
             });
         });
     }

@@ -13,7 +13,7 @@ import json
 import sqlite3
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timezone
 
 # ── Paths (env vars override for CI) ──────────────────
 DB_PATH = os.environ.get(
@@ -220,7 +220,7 @@ def export_teachers():
 
 def compute_meta(students, teachers):
     m = {
-        "last_updated": datetime.now().isoformat(),
+        "last_updated": datetime.now(timezone.utc).isoformat(),
         "total_students": len(students),
     }
 

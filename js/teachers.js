@@ -93,8 +93,8 @@ function renderAll() {
         <div class="teacher-card fade-enter" style="animation-delay:${i * 60}ms">
         <div class="teacher-header">
         <div>
-        <div class="teacher-name">${esc(t.name)}</div>
-        <div class="teacher-email${revealed ? '' : ' censored-val'}">${emailDisplay}</div>
+        <div class="teacher-name" style="cursor:pointer;" data-copy="${esc(t.name)}" title="Click to copy">${esc(t.name)}</div>
+        <div class="teacher-email${revealed ? '' : ' censored-val'}" ${revealed ? `style="cursor:pointer;" data-copy="${esc(t.username)}" title="Click to copy"` : ''}>${emailDisplay}</div>
         </div>
         <span class="teacher-status ${t.password_found ? 'cracked' : 'locked'}">
         ${t.password_found ? '✓ Cracked' : '✗ Locked'}
@@ -104,13 +104,13 @@ function renderAll() {
         ${pwdDisplay ? `
             <div class="teacher-detail-row">
             <span class="teacher-detail-label">Password</span>
-            <span class="teacher-detail-val${revealed ? '' : ' censored-val'}">${pwdDisplay}</span>
+            <span class="teacher-detail-val${revealed ? '' : ' censored-val'}" ${revealed ? `style="cursor:pointer;" data-copy="${esc(t.password)}" title="Click to copy"` : ''}>${pwdDisplay}</span>
             </div>` : ''}
 
             ${profile.teacher_id ? `
                 <div class="teacher-detail-row">
                 <span class="teacher-detail-label">Teacher ID</span>
-                <span class="teacher-detail-val">${profile.teacher_id}</span>
+                <span class="teacher-detail-val" style="cursor:pointer;" data-copy="${profile.teacher_id}" title="Click to copy">${profile.teacher_id}</span>
                 </div>` : ''}
 
                 ${profile.school_name ? `

@@ -278,3 +278,55 @@ function updateSidebarCounts() {
     if (navTeachers) navTeachers.textContent = teachers.length;
     if (navClasses) navClasses.textContent = sections;
 }
+
+/* ── Copy to Clipboard ────────────────────────────── */
+
+function initClickToCopy() {
+    document.addEventListener('click', async (e) => {
+        const target = e.target.closest('[data-copy]');
+        if (!target) return;
+
+        const text = target.dataset.copy;
+        if (!text) return;
+
+        try {
+            await navigator.clipboard.writeText(text);
+
+            // Show toast
+            const toast = document.createElement('div');
+            toast.className = 'copy-toast fade-enter';
+            toast.textContent = 'Copied!';
+            document.body.appendChild(toast);
+
+            // Position toast near cursor (fallback if we can't get mouse coords easily here, just fixed bottom or near element)
+            const rect = target.getBoundingClientRect();
+            toast.style.left = `${rect.left + (rect.width / 2)}px`;
+            toast.style.top = `${rect.top - 30}px`;
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translate(-50%, -10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 1000);
+            
+        } catch (err) {
+            console.error('Failed to copy', err);
+        }
+    });
+}
+
+// Init copy functionality on load
+document.addEventListener('DOMContentLoaded', initClickToCopy);
+
+/* ── Special Censoring (Anirudh) ──────────────────── */
+
+function isProtectedUser(student) {
+    if (!student || !student.display_name) return false;
+    return student.display_name.trim().toLowerCase() === 'anirudh kumar gupta';
+}
+
+function censorPhone(phone) {
+    if (!phone) return null;
+    return '••••••••' + phone.slice(-2);
+}
+
