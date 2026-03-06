@@ -1,5 +1,7 @@
 /**
  * landing.js — Landing page: typing, particles, coords.
+ * All stats load dynamically from meta.json.
+ * acad_INFO v4.3
  */
 
 /* ── Typing effect with realistic mistakes ────────── */
@@ -128,17 +130,89 @@ function initCoords() {
 }
 
 
+/* ── Format the "last updated" display ────────────── */
+
+function formatUpdated(isoString) {
+    try {
+        const d = new Date(isoString);
+        const now = new Date();
+        const diffMs = now - d;
+        const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffMins = Math.floor(diffMs / (1000 * 60));
+
+        let relative;
+        if (diffMins < 1) relative = 'just now';
+        else if (diffMins < 60) relative = `${diffMins}m ago`;
+        else if (diffHrs < 24) relative = `${diffHrs}h ago`;
+        else {
+            const diffDays = Math.floor(diffHrs / 24);
+            relative = `${diffDays}d ago`;
+        }
+
+        const dateStr = d.toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+        });
+        const timeStr = d.toLocaleTimeString('en-US', {
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+
+        return { relative, full: `${dateStr} at ${timeStr}` };
+    } catch (e) {
+        return { relative: '', full: '' };
+    }
+}
+
+
 /* ── Init ─────────────────────────────────────────── */
 
 document.addEventListener('DOMContentLoaded', async () => {
+    let meta = null;
+
     try {
         const r = await fetch('data/meta.json');
         if (r.ok) {
-            const m = await r.json();
+            meta = await r.json();
+
+            // Set all counter targets from live data
+            const mapping = {
+                'total_students': 'total_students',
+                'total_teachers_found': 'total_teachers_found',
+                'total_schools': null, // computed below
+            };
+
             document.querySelectorAll('.counter[data-key]').forEach(el => {
-                const v = m[el.dataset.key];
-                if (v != null) el.dataset.target = v;
+                const key = el.dataset.key;
+                let val;
+                if (key === 'total_schools') {
+                    val = (meta.schools || []).length;
+                } else {
+                    val = meta[key];
+                }
+                if (val != null) el.dataset.target = val;
             });
+
+                // Update the "last updated" badge
+                if (meta.last_updated) {
+                    const updated = formatUpdated(meta.last_updated);
+                    const updatedEl = document.getElementById('landing-updated');
+                    if (updatedEl) {
+                        updatedEl.textContent = `UPDATED ${updated.relative.toUpperCase()}`;
+                        updatedEl.title = updated.full;
+                    }
+                }
+
+                // Update typing phrases with live data
+                const studentCount = (meta.total_students || 0).toLocaleString();
+                const teacherCount = meta.total_teachers_found || 0;
+
+                // Dynamically build phrases with real numbers
+                window._typingPhrases = [
+                    `All data extracted. No rate limits encountered.`,
+                    `${studentCount} student profiles. 18 fields each. Indexed.`,
+                    `Default passwords. Predictable usernames. Zero friction.`,
+                    `${teacherCount} teacher accounts discovered and explored.`,
+                    `The system had no defenses. We walked in.`,
+                ];
         }
     } catch (_) {}
 
@@ -148,12 +222,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const typingEl = document.querySelector('.hero-typing');
     if (typingEl) {
-        typeWithMistakes(typingEl, [
+        const phrases = window._typingPhrases || [
             'All data extracted. No rate limits encountered.',
-            '515,764 credentials checked in 36 minutes.',
             'Default passwords. Predictable usernames. Zero friction.',
-            '1,319 student profiles. 18 fields each. Indexed.',
             'The system had no defenses. We walked in.',
-        ]);
+        ];
+        typeWithMistakes(typingEl, phrases);
     }
 });

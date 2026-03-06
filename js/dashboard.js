@@ -23,9 +23,26 @@ function renderAll() {
     const updatedEl = document.getElementById('last-updated');
     if (updatedEl && DATA.meta.last_updated) {
         const d = new Date(DATA.meta.last_updated);
-        updatedEl.textContent = 'UPDATED · ' + d.toLocaleDateString('en-US', {
-            month: 'short', year: 'numeric'
+        const dateStr = d.toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
         }).toUpperCase();
+        const timeStr = d.toLocaleTimeString('en-US', {
+            hour: '2-digit', minute: '2-digit', hour12: false
+        });
+
+        // Relative time for tooltip
+        const diffMs = Date.now() - d.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHrs = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffHrs / 24);
+        let relative;
+        if (diffMins < 1) relative = 'just now';
+        else if (diffMins < 60) relative = `${diffMins}m ago`;
+        else if (diffHrs < 24) relative = `${diffHrs}h ago`;
+        else relative = `${diffDays}d ago`;
+
+        updatedEl.textContent = `UPDATED · ${dateStr} · ${timeStr}`;
+        updatedEl.title = relative;
     }
 
     /* ── Stats (computed live) ─────────────────────── */

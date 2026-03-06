@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ACADALLY DASHBOARD</title>
+    <title>acad_INFO</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,12 +23,12 @@
 <nav class="l-nav">
     <div class="l-nav-mark">
         <div class="l-nav-dot"></div>
-        <span class="micro">SYSTEM v3.0</span>
+        <span class="micro">acad_INFO</span>
     </div>
     <div class="l-nav-right">
         <div class="l-nav-status">
             <span class="l-nav-status-dot"></span>
-            <span>ALL SYSTEMS NOMINAL</span>
+            <span id="landing-updated">LOADING…</span>
         </div>
         <span class="l-nav-coords">X:0000 Y:0000</span>
     </div>
@@ -47,11 +47,11 @@
         </div>
 
         <div class="hero-stats reveal" style="--d:5">
-            <span><em class="counter" data-target="1319" data-key="total_students">0</em> students</span>
+            <span><em class="counter" data-target="0" data-key="total_students">0</em> students</span>
             <span class="sep">·</span>
-            <span><em class="counter" data-target="5" data-key="total_teachers_found">0</em> teachers</span>
+            <span><em class="counter" data-target="0" data-key="total_teachers_found">0</em> teachers</span>
             <span class="sep">·</span>
-            <span><em class="counter" data-target="2">0</em> schools</span>
+            <span><em class="counter" data-target="0" data-key="total_schools">0</em> schools</span>
             <span class="sep">·</span>
             <span><em class="counter" data-target="0">0</em> rate limits</span>
         </div>
@@ -87,7 +87,7 @@
             <h3>Extract</h3>
             <p>Automated login and full profile data capture via direct API requests.</p>
             <div class="process-val">
-                <em class="counter" data-target="1319" data-key="total_students">0</em>
+                <em class="counter" data-target="0" data-key="total_students">0</em>
                 <span>profiles captured</span>
             </div>
         </div>
@@ -132,7 +132,7 @@
         </div>
         <div class="log-entry reveal" style="--d:4">
             <span class="log-phase">Phase 5</span>
-            <span class="log-desc">Dashboard deployed</span>
+            <span class="log-desc">Auto-update pipeline</span>
             <span class="log-status live">active</span>
         </div>
     </div>
@@ -143,7 +143,7 @@
 <footer class="l-footer">
     <div class="l-footer-inner">
         <div class="l-footer-left">
-            <span class="l-footer-brand">ACADALLY DASHBOARD</span>
+            <span class="l-footer-brand">acad_INFO</span>
             <span class="l-footer-copy">© 2025 Anirudh Gupta. All rights reserved.</span>
         </div>
         <div class="l-footer-right">
@@ -157,15 +157,14 @@
         </div>
     </div>
     <div class="l-footer-bar">
-        <span class="micro">SYSTEM v3.0 · OPERATIONAL</span>
+        <span class="micro">acad_INFO · AUTO-UPDATING</span>
         <div class="l-footer-links">
-            <a href="https://github.com/acadhack" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://github.com/acadinfo-db" target="_blank" rel="noopener">GitHub</a>
             <a href="dashboard.html">Dashboard</a>
         </div>
     </div>
 </footer>
 
-<script src="js/data.js"></script>
 <script src="js/motion.js"></script>
 <script src="js/landing.js"></script>
 </body>
