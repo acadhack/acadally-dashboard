@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-03-15T03:21:06.447789+00:00",
-  "total_students": 1396,
+  "last_updated": "2026-03-15T07:10:05.413266+00:00",
+  "total_students": 1395,
   "schools": [
     {
       "name": "Cygnus World School",
@@ -10,7 +10,7 @@
     {
       "name": "Delhi Public School Harni (DPS Harni)",
       "code": "dpshar",
-      "count": 1277
+      "count": 1276
     }
   ],
   "school_stats": {
@@ -44,16 +44,16 @@
       "total_teachers_locked": 0
     },
     "dpshar": {
-      "total_students": 1277,
+      "total_students": 1276,
       "class_counts": {
-        "10": 210,
+        "10": 209,
         "6": 283,
         "7": 254,
         "8": 260,
         "9": 270
       },
       "section_counts": {
-        "10-A": 32,
+        "10-A": 31,
         "10-B": 34,
         "10-C": 33,
         "10-D": 39,
@@ -94,16 +94,16 @@
       },
       "gender_counts": {
         "female": 203,
-        "prefer_not_to_say": 792,
+        "prefer_not_to_say": 791,
         "male": 282
       },
-      "students_with_phone": 1277,
-      "students_with_email": 1104,
-      "gems_total": 112448,
+      "students_with_phone": 1276,
+      "students_with_email": 1103,
+      "gems_total": 112413,
       "gems_avg": 88.1,
       "gems_max": 612,
-      "coins_total": 4642920,
-      "coins_avg": 3635.8,
+      "coins_total": 4641365,
+      "coins_avg": 3637.4,
       "coins_max": 41635,
       "zero_gems_count": 33,
       "total_teachers_found": 5,
@@ -114,14 +114,14 @@
   "total_teachers_found": 5,
   "total_teachers_cracked": 4,
   "total_teachers_in_list": 52,
-  "gems_total": 134273,
+  "gems_total": 134238,
   "gems_avg": 96.2,
   "gems_max": 939,
-  "coins_total": 5692255,
-  "coins_avg": 4077.5,
+  "coins_total": 5690700,
+  "coins_avg": 4079.4,
   "coins_max": 41635,
   "zero_gems_count": 36,
-  "students_with_phone": 1281,
-  "students_with_email": 1104,
+  "students_with_phone": 1280,
+  "students_with_email": 1103,
   "total_sections": 42
 }
