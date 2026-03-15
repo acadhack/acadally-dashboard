@@ -73,14 +73,24 @@ function initCursor() {
     `;
     document.body.appendChild(el);
 
-    let mx = -100, my = -100;
+    let targetX = -100, targetY = -100;
+    let currentX = -100, currentY = -100;
+    const lerp = 0.15;
 
     document.addEventListener('mousemove', e => {
-        mx = e.clientX;
-        my = e.clientY;
-        el.style.transform = `translate(${mx}px, ${my}px)`;
+        targetX = e.clientX;
+        targetY = e.clientY;
         if (!el.classList.contains('visible') && !el.classList.contains('hidden')) el.classList.add('visible');
     }, { passive: true });
+
+    function tick() {
+        currentX += (targetX - currentX) * lerp;
+        currentY += (targetY - currentY) * lerp;
+        el.style.transform = `translate(${currentX}px, ${currentY}px)`;
+        requestAnimationFrame(tick);
+    }
+
+    requestAnimationFrame(tick);
 
     document.addEventListener('mouseover', e => {
         const t = e.target;

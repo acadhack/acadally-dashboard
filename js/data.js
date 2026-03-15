@@ -49,7 +49,10 @@ const SCHOOL = {
 
 /* ── PIN authentication ───────────────────────────── */
 
-const _AK = atob('MTMzNw==');
+// Obfuscated PIN: split across charCodes
+const _p1 = String.fromCharCode(49, 51);
+const _p2 = String.fromCharCode(51, 55);
+function _getKey() { return _p1 + _p2; }
 
 function isAuthed() {
     return sessionStorage.getItem('acad-auth') === '1';
@@ -57,10 +60,41 @@ function isAuthed() {
 
 function setAuthed() {
     sessionStorage.setItem('acad-auth', '1');
+    sessionStorage.removeItem('acad-pin-attempts');
+    sessionStorage.removeItem('acad-pin-lockout');
+}
+
+function _getPinAttempts() {
+    return parseInt(sessionStorage.getItem('acad-pin-attempts') || '0', 10);
+}
+
+function _setPinAttempts(n) {
+    sessionStorage.setItem('acad-pin-attempts', String(n));
+}
+
+function _isLocked() {
+    const lockUntil = parseInt(sessionStorage.getItem('acad-pin-lockout') || '0', 10);
+    if (lockUntil && Date.now() < lockUntil) {
+        return Math.ceil((lockUntil - Date.now()) / 1000);
+    }
+    if (lockUntil && Date.now() >= lockUntil) {
+        sessionStorage.removeItem('acad-pin-lockout');
+    }
+    return 0;
+}
+
+function _lockPin(seconds) {
+    sessionStorage.setItem('acad-pin-lockout', String(Date.now() + seconds * 1000));
 }
 
 function showPinModal(onSuccess) {
     if (isAuthed()) { onSuccess(); return; }
+
+    const lockSecs = _isLocked();
+    if (lockSecs > 0) {
+        _showLockMessage(lockSecs);
+        return;
+    }
 
     const overlay = document.createElement('div');
     overlay.className = 'pin-overlay';
@@ -69,32 +103,77 @@ function showPinModal(onSuccess) {
     <span class="micro">RESTRICTED ACCESS</span>
     <h3>Enter PIN</h3>
     <p>Sensitive data is protected. Enter the access PIN to reveal credentials and contact information.</p>
-    <input type="password" class="pin-input" maxlength="10"
-    placeholder="····" autocomplete="off" spellcheck="false">
+    <div class="pin-cells">
+        <div class="pin-cell"></div>
+        <div class="pin-cell"></div>
+        <div class="pin-cell"></div>
+        <div class="pin-cell"></div>
+    </div>
+    <input type="password" class="pin-input-hidden" maxlength="4"
+    autocomplete="off" spellcheck="false" inputmode="numeric">
     <div class="pin-error"></div>
     <a href="#" class="pin-cancel" data-hover>Cancel</a>
     </div>
     `;
 
     document.body.appendChild(overlay);
-    const input = overlay.querySelector('.pin-input');
+    const input = overlay.querySelector('.pin-input-hidden');
     const error = overlay.querySelector('.pin-error');
     const cancel = overlay.querySelector('.pin-cancel');
+    const cells = overlay.querySelectorAll('.pin-cell');
 
     requestAnimationFrame(() => input.focus());
 
+    // Animate asterisks into cells
+    input.addEventListener('input', () => {
+        const val = input.value;
+        cells.forEach((cell, i) => {
+            if (i < val.length) {
+                if (!cell.classList.contains('filled')) {
+                    cell.classList.add('filled');
+                    cell.textContent = '*';
+                    cell.style.animation = 'none';
+                    cell.offsetHeight; // trigger reflow
+                    cell.style.animation = 'pin-char-in 0.3s var(--ease)';
+                }
+            } else {
+                cell.classList.remove('filled');
+                cell.textContent = '';
+                cell.style.animation = '';
+            }
+        });
+
+        if (val.length === 4) {
+            setTimeout(() => tryAuth(), 100);
+        }
+    });
+
     function tryAuth() {
-        if (input.value === _AK) {
+        if (input.value === _getKey()) {
             setAuthed();
             overlay.remove();
             onSuccess();
         } else {
-            error.textContent = 'Incorrect PIN';
-            input.classList.add('pin-error-state');
+            const attempts = _getPinAttempts() + 1;
+            _setPinAttempts(attempts);
+
+            if (attempts >= 6) {
+                _lockPin(300); // 5 min
+                overlay.remove();
+                _showLockMessage(300);
+                return;
+            } else if (attempts >= 3) {
+                _lockPin(30); // 30 sec
+                overlay.remove();
+                _showLockMessage(30);
+                return;
+            }
+
+            error.textContent = `Incorrect PIN (${3 - attempts} attempts left)`;
             overlay.querySelector('.pin-modal').classList.add('pin-shake');
+            cells.forEach(c => { c.classList.remove('filled'); c.textContent = ''; c.style.animation = ''; });
             setTimeout(() => {
                 overlay.querySelector('.pin-modal').classList.remove('pin-shake');
-                input.classList.remove('pin-error-state');
             }, 500);
             input.value = '';
             input.focus();
@@ -102,12 +181,27 @@ function showPinModal(onSuccess) {
     }
 
     input.addEventListener('keydown', e => {
-        if (e.key === 'Enter') tryAuth();
         if (e.key === 'Escape') overlay.remove();
     });
 
-        cancel.addEventListener('click', e => { e.preventDefault(); overlay.remove(); });
-        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+    cancel.addEventListener('click', e => { e.preventDefault(); overlay.remove(); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+}
+
+function _showLockMessage(secs) {
+    const overlay = document.createElement('div');
+    overlay.className = 'pin-overlay';
+    overlay.innerHTML = `
+    <div class="pin-modal">
+    <span class="micro" style="color:var(--negative)">LOCKED</span>
+    <h3>Too many attempts</h3>
+    <p>Access locked for <strong>${secs}s</strong>. Try again later.</p>
+    <a href="#" class="pin-cancel" data-hover>Close</a>
+    </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('.pin-cancel').addEventListener('click', e => { e.preventDefault(); overlay.remove(); });
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
 }
 
 
@@ -116,16 +210,16 @@ function showPinModal(onSuccess) {
 function censorEmail(email) {
     if (!email) return null;
     const at = email.indexOf('@');
-    if (at < 0) return '••••';
+    if (at < 0) return '****';
     const local = email.slice(0, at);
     const domain = email.slice(at);
     const show = Math.max(1, Math.min(2, local.length - 1));
-    return local.slice(0, show) + '•'.repeat(Math.max(local.length - show, 3)) + domain;
+    return local.slice(0, show) + '*'.repeat(Math.max(local.length - show, 3)) + domain;
 }
 
 function censorPassword(pwd) {
     if (!pwd) return null;
-    return '•'.repeat(Math.max(pwd.length, 8));
+    return '*'.repeat(Math.max(pwd.length, 8));
 }
 
 
@@ -168,10 +262,21 @@ function matchQ(text, q) {
 function searchStudent(s, raw) {
     const q = raw.toLowerCase().trim();
     if (!q) return true;
-    return matchQ(s.first_name, q) || matchQ(s.last_name, q) ||
-    matchQ(s.username, q) || matchQ(s.phone_number, q) ||
-    matchQ(s.email, q) || matchQ(s.section_name, q) ||
-    matchQ(s.display_name, q);
+
+    // Split into tokens for AND-based multi-token search
+    const tokens = q.split(/\s+/).filter(t => t.length > 0);
+
+    const fields = [
+        s.first_name, s.last_name, s.username,
+        s.phone_number, s.email, s.section_name,
+        s.display_name, s.gender ? formatGender(s.gender) : '',
+        s.class_num != null ? String(s.class_num) : '',
+    ];
+
+    // Every token must match at least one field
+    return tokens.every(token =>
+        fields.some(f => f && String(f).toLowerCase().includes(token))
+    );
 }
 
 function sortBy(arr, key, desc = false) {
@@ -327,6 +432,6 @@ function isProtectedUser(student) {
 
 function censorPhone(phone) {
     if (!phone) return null;
-    return '••••••••' + phone.slice(-2);
+    return '********' + phone.slice(-2);
 }
 
