@@ -1,6 +1,6 @@
 {
-  "last_updated": "2026-03-21T06:57:24.858555+00:00",
-  "total_students": 1396,
+  "last_updated": "2026-03-21T13:07:14.652630+00:00",
+  "total_students": 1390,
   "schools": [
     {
       "name": "Cygnus World School",
@@ -10,7 +10,7 @@
     {
       "name": "Delhi Public School Harni (DPS Harni)",
       "code": "dpshar",
-      "count": 1277
+      "count": 1271
     }
   ],
   "school_stats": {
@@ -44,10 +44,10 @@
       "total_teachers_locked": 0
     },
     "dpshar": {
-      "total_students": 1277,
+      "total_students": 1271,
       "class_counts": {
-        "10": 210,
-        "6": 283,
+        "10": 205,
+        "6": 282,
         "7": 254,
         "8": 260,
         "9": 270
@@ -57,9 +57,9 @@
         "10-B": 34,
         "10-C": 33,
         "10-D": 39,
-        "10-E": 36,
-        "10-F": 36,
-        "6-A": 35,
+        "10-E": 35,
+        "10-F": 32,
+        "6-A": 34,
         "6-B": 37,
         "6-C": 31,
         "6-D": 34,
@@ -93,17 +93,17 @@
         "9-H": 33
       },
       "gender_counts": {
-        "female": 203,
-        "prefer_not_to_say": 792,
-        "male": 282
+        "female": 202,
+        "prefer_not_to_say": 788,
+        "male": 281
       },
-      "students_with_phone": 1277,
-      "students_with_email": 1104,
-      "gems_total": 112719,
-      "gems_avg": 88.3,
+      "students_with_phone": 1271,
+      "students_with_email": 1098,
+      "gems_total": 112386,
+      "gems_avg": 88.4,
       "gems_max": 615,
-      "coins_total": 4634570,
-      "coins_avg": 3629.3,
+      "coins_total": 4626210,
+      "coins_avg": 3639.8,
       "coins_max": 41755,
       "zero_gems_count": 32,
       "total_teachers_found": 5,
@@ -114,14 +114,14 @@
   "total_teachers_found": 5,
   "total_teachers_cracked": 4,
   "total_teachers_in_list": 52,
-  "gems_total": 134545,
-  "gems_avg": 96.4,
+  "gems_total": 134212,
+  "gems_avg": 96.6,
   "gems_max": 939,
-  "coins_total": 5684500,
-  "coins_avg": 4072.0,
+  "coins_total": 5676140,
+  "coins_avg": 4083.6,
   "coins_max": 41755,
   "zero_gems_count": 35,
-  "students_with_phone": 1281,
-  "students_with_email": 1104,
+  "students_with_phone": 1275,
+  "students_with_email": 1098,
   "total_sections": 42
 }
